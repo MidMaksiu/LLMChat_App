@@ -1,12 +1,26 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Literal, Optional
+from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
 LM_STUDIO_BASE = "http://localhost:1234"
 MODEL = "bielik-minitron-7b-v3.0-instruct"
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",  #VS CODE LIVE PREVIEW
+    "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class Message(BaseModel):
     role: Literal["system", "user", "assistant"]

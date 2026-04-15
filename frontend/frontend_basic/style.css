@@ -1,0 +1,191 @@
+:root {
+  --bg: #06070b;
+  --panel: #121a29;
+  --text: #e8eefc;
+  --muted: #acc0af;
+  --border: rgba(255, 255, 255, 0.12);
+  --danger: #ff4d6d;
+  --btn: #1c6141;
+  --btn-hover: #14ab80;
+  --offcanvas-text: #1fcc7c;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 16px;
+}
+.h4{
+    margin: 0 0 8px;
+    font-size: 28px;
+    letter-spacing: 0.2px;
+    color: rgba(22, 201, 57, 0.65);
+    text-shadow: 1px 0px 5px rgba(26, 201, 70, 0.65);
+  
+
+}
+
+.h6 {
+  margin-top: 16px;
+  font-size: 22px;
+  letter-spacing: 0.2px;
+  color: rgb(255, 255, 255) !important; 
+}
+
+.label {
+  display: block;
+  margin: 14px 0 8px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  border-color: #4a4a4a;
+  outline: none;
+  resize: vertical;
+}
+aside {
+  padding-right: 24px;
+  background: var(--panel);
+  border-radius: 20px;
+}
+aside h3 {
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+aside label {
+  color: var(--muted);
+}
+
+.textarea:focus {
+  border-color: rgb(71, 168, 136);
+}
+.textarea:focus::placeholder {
+  color: rgb(71, 168, 136);
+  opacity: 1;
+}
+
+.bg-panel {
+  background: var(--panel);
+}
+
+.chat-shell {
+  max-width: 720px;
+  width: 100%;
+  box-shadow: 0 18px 40px rgba(35, 201, 66, 0.18);
+  border-radius: 24px;
+}
+.btn {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--btn);
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn:hover { background: var(--btn-hover); }
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.error {
+  margin: 10px 0 0;
+  color: var(--danger);
+  min-height: 18px;
+}
+.border-custom
+{
+    border: 2px solid rgb(10, 91, 37) !important; 
+}
+
+.offcanvas {
+  background: var(--panel);
+  color: var(--offcanvas-text);
+}
+
+/* Dark inputs inside the offcanvas (settings panel) */
+#settingsOffcanvas .form-control,
+#settingsOffcanvas .form-select {
+  background-color: #0f172a;   
+  border-color: #1f2a44;       
+  color: #e5e7eb;              
+}
+
+
+
+
+/* Focus highlighting */ 
+#settingsOffcanvas .form-control:focus,
+#settingsOffcanvas .form-select:focus {
+  background-color: #0f172a;
+  border-color: #22c55e;     
+  box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
+  color: #ffffff;
+}
+
+/* Changed the dropdown to have a custom arrow and color */
+#settingsOffcanvas .form-select {
+  background-color: #0f172a;
+  border-color: #3e967f;
+  color: #e5e7eb;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2.5rem;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #e5e7eb 50%),
+    linear-gradient(135deg, #e5e7eb 50%, transparent 50%);
+  background-position: calc(100% - 1rem) calc(50% - 0.05em), calc(100% - 0.7rem) calc(50% - 0.05em);
+  background-size: 0.35em 0.35em;
+  background-repeat: no-repeat;
+}
+
+/* Opcje w dropdown (czasem ograniczone przez przeglądarkę, ale spróbujemy) */
+#settingsOffcanvas option {
+  background: #0f172a;
+  color: #ffffff;
+}
+#resetSettingsBtn {
+  background: #840c0c;
+  color: #fdfdfd;
+}
+#settingsOffcanvas .btn-close {
+  filter: invert(1);        /* robi z czarnego na białe */
+  opacity: 1;               /* bootstrap domyślnie daje mniejszą */
+}
