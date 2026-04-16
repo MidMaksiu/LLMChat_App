@@ -35,10 +35,10 @@ body {
 }
 
 .h6 {
-  margin-top: 16px;
-  font-size: 22px;
+  margin-top: 30px;
+  font-size: 30px;
   letter-spacing: 0.2px;
-  color: rgb(255, 255, 255) !important; 
+  color: rgb(130, 170, 128) !important; 
 }
 
 .label {
@@ -61,7 +61,7 @@ body {
   resize: vertical;
 }
 aside {
-  padding-right: 24px;
+  padding-right: 10px;
   background: var(--panel);
   border-radius: 20px;
 }
@@ -176,7 +176,7 @@ aside label {
   background-repeat: no-repeat;
 }
 
-/* Opcje w dropdown (czasem ograniczone przez przeglądarkę, ale spróbujemy) */
+/* Options in dropdown (sometimes limited by browser, but let's try) */
 #settingsOffcanvas option {
   background: #0f172a;
   color: #ffffff;
@@ -186,6 +186,97 @@ aside label {
   color: #fdfdfd;
 }
 #settingsOffcanvas .btn-close {
-  filter: invert(1);        /* robi z czarnego na białe */
-  opacity: 1;               /* bootstrap domyślnie daje mniejszą */
+  filter: invert(1);        /* makes black white */
+  opacity: 1;               /* bootstrap by default gives smaller */
+}
+
+/* Chat bubbles */
+.chat-messages{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 240px;      /* so it's not "empty" */
+  max-height: 420px;      /* scroll control */
+}
+
+.msg{
+  display: flex;
+}
+
+.msg-user{
+  justify-content: flex-end;
+}
+
+.msg-assistant{
+  justify-content: flex-start;
+}
+
+/* Opcjonalnie: system message na środku */
+.msg-system{
+  justify-content: center;
+}
+
+.bubble{
+  max-width: 78%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  line-height: 1.35;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+
+  /* animacja wejścia */
+  animation: bubbleIn 160ms ease-out;
+}
+
+.bubble-user{
+  background: rgba(28, 97, 65, 0.85); /* zielony podobny do Twoich btn */
+  border-color: rgba(34,197,94,0.25);
+}
+
+.bubble-assistant{
+  background: #0f172a; /* ciemne */
+  border-color: #1f2a44;
+}
+
+.bubble-system{
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Typing dots */
+.bubble.typing{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dot{
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.75);
+  animation: dotPulse 900ms infinite ease-in-out;
+}
+#newChatBtn{
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+#newChatBtn:hover{
+  background: rgba(255, 77, 109, 0.12);
+}
+.dot:nth-child(2){ animation-delay: 150ms; }
+.dot:nth-child(3){ animation-delay: 300ms; }
+
+@keyframes bubbleIn{
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes dotPulse{
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+  40%           { transform: translateY(-3px); opacity: 1; }
 }

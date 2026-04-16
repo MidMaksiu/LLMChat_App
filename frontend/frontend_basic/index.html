@@ -43,8 +43,7 @@
         </header>
 
         <section class="overflow-auto border rounded p-3 mb-3 bg-panel border-custom" aria-label="Chat Messages">
-          <label class="label" for="answer">Model Answer</label>
-          <textarea id="answer" class="textarea" rows="8" readonly placeholder="Here will be response..."></textarea>
+          <div id="chatMessages" class="chat-messages" aria-live="polite" aria-label="Conversation"></div>
         </section>
 
         <div class="status" id="status"></div>
@@ -52,11 +51,19 @@
 
         <form class="mt-2" aria-label="Sending Message">
           <label class="label" for="prompt">Prompt</label>
-          <textarea id="prompt" class="textarea" rows="5" placeholder="Enter your prompt..."></textarea>
+          <textarea id="prompt" class="textarea" rows="5" placeholder="Ask anything..."></textarea>
 
-          <div class="input-group mt-3">
-            <button id="sendBtn" type="button" class="btn">Send</button>
-            <button id="clearBtn" type="button" class="btn btn-secondary">Clear</button>
+          <div class="d-flex align-items-center mt-3">
+            <!-- Lewa strona: Send + Clear -->
+            <div class="d-flex gap-2">
+              <button id="sendBtn" type="button" class="btn">Send</button>
+              <button id="clearBtn" type="button" class="btn btn-secondary">Clear</button>
+            </div>
+
+            <!-- Prawa strona: New Chat -->
+            <button id="newChatBtn" type="button" class="btn btn-outline-danger ms-auto">
+              New Chat
+            </button>
           </div>
         </form>
 
@@ -83,20 +90,11 @@
         <label for="modelSelect" class="form-label">Model</label>
         <select id="modelSelect" class="form-select form-select-sm">
           <option value="bielik-minitron-7b-v3.0-instruct" selected>🦅bielik-minitron-7b-v3.0-instruct</option>
-          <option value="inny-model-1">inny-model-1</option>
+          <option value="qwen/qwen3.5-9b">🤖qwen/qwen3.5-9b</option>
           <option value="inny-model-2">inny-model-2</option>
         </select>
       </div>
 
-      <!-- System Role-->
-      <div>
-        <label for="RoleSelect" class="form-label">Model Role</label>
-        <select id="RoleSelect" class="form-select form-select-sm">
-          <option value="user" selected>🙂User</option>
-          <option value="system">🤖 System</option>
-          <option value="assistant">🔧 Assistant</option>
-        </select>
-      </div>
 
       <!-- Temperature slider -->
       <div>
@@ -110,7 +108,7 @@
       <!-- Max tokens -->
       <div>
         <label for="maxTokensInput" class="form-label">Max tokens</label>
-        <input type="number" class="form-control form-control-sm" id="maxTokensInput" min="1" max="4096" step="1" value="256" />
+        <input type="number" class="form-control form-control-sm" id="maxTokensInput" min="1" max="4096" step="1" value="1024" />
       </div>
 
       <div class="d-flex gap-2">

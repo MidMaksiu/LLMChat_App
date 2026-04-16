@@ -3,6 +3,10 @@
 A chat-like app to communicate with locally started models using **LM Studio**.  
 Made out of curiosity because I'm currently enrolled in an AI project at my university.
 
+## Features to Add
+- Conversation History
+- Document Data bases
+- Streaming
 ## Project structure
 - **/frontend_basic** — HTML/CSS + vanilla JS chat UI (Bootstrap)
 - **/backend** — FastAPI proxy for sending messages to LM Studio and receiving responses
