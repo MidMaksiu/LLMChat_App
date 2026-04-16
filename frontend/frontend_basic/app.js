@@ -9,7 +9,6 @@ const settings = {
   model: "bielik-minitron-7b-v3.0-instruct", // default model
   temperature: 0.7,
   max_tokens: 1024,
-  role: "user", // default role for messages sent from the UI
 };
 
 let conversationHistory = [];
@@ -23,7 +22,7 @@ function roleClass(role){
   if (role === "system") return "system";
   return "assistant";
 }
-async function loadModels() {
+async function loadModels(modelSelect) {
   modelSelect.disabled = true;
   modelSelect.innerHTML = `<option>Loading...</option>`;
 
@@ -31,7 +30,8 @@ async function loadModels() {
     const res = await fetch("http://127.0.0.1:8000/api/models");
     if (!res.ok) throw new Error(await res.text());
 
-    const { models } = await res.json(); // { models: [...] }
+    const { models } = await res.json();
+
     if (!models || models.length === 0) {
       modelSelect.innerHTML = `<option>No chat models</option>`;
       return;
@@ -43,18 +43,20 @@ async function loadModels() {
       .map((id) => `<option value="${id}">${id}</option>`)
       .join("");
 
-    // ustaw aktualny jeśli jest na liście, inaczej pierwszy dostępny
-    if (models.includes(prev)) modelSelect.value = prev;
-    else {
+    if (models.includes(prev)) {
+      modelSelect.value = prev;
+    } else {
       settings.model = models[0];
       modelSelect.value = settings.model;
     }
+  } catch (err) {
+    modelSelect.innerHTML = `<option>Failed to load models</option>`;
+    errorEl.textContent = err?.message || "Could not load models";
   } finally {
     modelSelect.disabled = false;
   }
 }
 
-loadModels();
 function addBubble(role, content){
   const side = roleClass(role);
 
@@ -97,14 +99,13 @@ function hideTyping(){
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const roleSelect = document.getElementById("RoleSelect");
   const modelSelect = document.getElementById("modelSelect");
   const temperatureRange = document.getElementById("temperatureRange");
   const temperatureValue = document.getElementById("temperatureValue");
   const maxTokensInput = document.getElementById("maxTokensInput");
   const resetBtn = document.getElementById("resetSettingsBtn");
   const applyBtn = document.getElementById("applySettingsBtn");
-
+  loadModels(modelSelect);
   temperatureRange.addEventListener("input", () => {
     temperatureValue.textContent = Number(temperatureRange.value).toFixed(1);
   });
@@ -118,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Reset czatu tylko jeśli zmieniłeś model
     if (settings.model !== prevModel) {
-      clearChatHistory();
+      resetConversation();
     }
 
     // Zamknij offcanvas po Apply
@@ -134,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modelSelect.value = "bielik-minitron-7b-v3.0-instruct";
     temperatureRange.value = "0.7";
     temperatureValue.textContent = "0.7";
-    maxTokensInput.value = "256";
+    maxTokensInput.value = "1024";
 
     settings.model = modelSelect.value;
     settings.temperature = Number(temperatureRange.value);
@@ -152,7 +153,7 @@ async function sendPrompt() {
   promptEl.value = "";
 
   // Zwykle prompt z UI powinien mieć role="user"
-  const userRole = settings.role || "user";
+  const userRole = "user";
 
   // 1) Dodaj do UI i historii
   addBubble(userRole, prompt);
@@ -252,12 +253,12 @@ if (assistantBubble) {
 
 sendBtn.addEventListener("click", sendPrompt);
 
-clearBtn.addEventListener("click", clearChatUI);
+clearBtn.addEventListener("click", clearVisibleChat);
 
 
 
 newChatBtn.addEventListener("click", () => {
-  clearChatHistory();
+  resetConversation();
 });
 
 
@@ -268,7 +269,7 @@ promptEl.addEventListener("keydown", (e) => {
     sendPrompt();
   }
 });
-function clearChatUI() {
+function clearVisibleChat() {
   promptEl.value = "";
   errorEl.textContent = "";
   statusEl.textContent = "";
@@ -276,9 +277,7 @@ function clearChatUI() {
   chatEl.innerHTML = "";     // czyści tylko to co widać
   // UWAGA: conversationHistory zostaje nietknięte
 }
-function clearChatHistory() {
-  clearChatUI()
+function resetConversation() {
+  clearVisibleChat()
   conversationHistory = [];
 }
-
-loadModels();

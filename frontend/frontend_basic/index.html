@@ -8,35 +8,34 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-<div class="container py-5">
-  <div class ="row justify-content-center">
-      <div class="header-shell text-center mb-4">
-        <h1 class="display-4">LLM Chat MVP</h1>
-        <p class="lead">A simple chat interface for testing LLM responses.</p>
+<div class="container px-0">
+ <div class ="row justify-content-center">
+  <div class="header-shell text-center mb-4">
+    <h1 class="display-4">LLM Chat MVP</h1>
+    <p class="lead">A simple chat interface for testing LLM responses.</p>
   </div>
-    </div>
-  <div class="row">
+</div>
+  <div class="row g-4">
 
     <!-- Left column (sidebar) -->
-    <aside class="col-md-3 d-none d-md-block pe-10">
-      <header class="mb-3">
-        <h2 class="h6 text-uppercase text-muted mb-1">Panel</h2>
-      </header>
-
+    <aside class="col-md-2 d-none d-md-block sidebar me-5 pe-3">
+        <header class="mb-2">
+          <h2 class="h6 text-uppercase text-muted mb-1 text-center">Menu</h2>
+        </header>
       <!-- tu później możesz wrzucić opcje, listę czatów itd. -->
-        <button class="btn btn-sm btn-outline-primary mt-2 w-100"
+        <button class="btn btn-md btn-outline-primary mt-2 w-100"
                 type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#settingsOffcanvas"
                 aria-controls="settingsOffcanvas"
                 id = "param_btn">⚙️ Settings</button>
-
     </aside>
 
-    <!-- Chat Column -->
-    <div class="col-12 col-md-9">
 
-      <div class="chat-shell mx-auto p-4">
+    <!-- Chat Column -->
+    <div class="col-12 col-md-9 ps-5 pe-0">
+
+      <div class="chat-shell  p-4">
 
         <header class="mb-3 text-center">
           <h1 class="h4 m-0">LLM Chat</h1>
@@ -89,9 +88,7 @@
       <div>
         <label for="modelSelect" class="form-label">Model</label>
         <select id="modelSelect" class="form-select form-select-sm">
-          <option value="bielik-minitron-7b-v3.0-instruct" selected>🦅bielik-minitron-7b-v3.0-instruct</option>
-          <option value="qwen/qwen3.5-9b">🤖qwen/qwen3.5-9b</option>
-          <option value="inny-model-2">inny-model-2</option>
+          <option value="">Loading models...</option>
         </select>
       </div>
 
