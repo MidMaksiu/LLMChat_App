@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="container px-0">
+  <main class="app-shell container-fluid px-4 px-xl-5">
     <div class="row justify-content-center">
       <div class="header-shell text-center mb-4">
         <h1 class="app-title display-4">LLM Chat MVP</h1>
@@ -40,10 +40,8 @@
             <h2 class="chat-title m-0">LLM Chat</h2>
           </header>
 
-          <section
-            class="overflow-auto border rounded p-3 mb-3 bg-panel border-custom"
-            aria-label="Chat Messages"
-          >
+          <section class="chat-panel border rounded p-3 mb-3 bg-panel border-custom"
+            aria-label="Chat Messages">
             <div
               id="chatMessages"
               class="chat-messages"
@@ -60,7 +58,7 @@
         <textarea
           id="prompt"
           class="textarea"
-          rows="5"
+          rows="3"
           placeholder="Ask anything..."
         ></textarea>
 

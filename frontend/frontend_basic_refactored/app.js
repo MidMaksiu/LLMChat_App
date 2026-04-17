@@ -29,7 +29,7 @@ function updateActionButtons() {
 }
 function finalizeAssistantBubble(bubble, content) {
   if (!bubble) return;
-  
+
   bubble.classList.add("bubble-markdown");
   bubble.innerHTML = renderMarkdownToHtml(content);
 }
@@ -364,7 +364,7 @@ async function streamAssistantResponse() {
 
         if (result.type === "delta" && result.delta) {
           assistantContent += result.delta;
-          assistantBubble = appendAssistantDelta(assistantBubble, result.delta);
+          assistantBubble = appendAssistantDelta(assistantBubble, assistantContent);
         }
       }
     }
@@ -375,15 +375,16 @@ async function streamAssistantResponse() {
     }
   }
 }
-function appendAssistantDelta(assistantBubble, delta) {
+function appendAssistantDelta(assistantBubble, fullContent) {
   let bubble = assistantBubble;
 
   if (!bubble) {
     hideTyping();
     bubble = addBubble("assistant", "");
+    bubble.classList.add("bubble-markdown");
   }
 
-  bubble.textContent += delta;
+  bubble.innerHTML = renderMarkdownToHtml(fullContent);
   chatEl.scrollTop = chatEl.scrollHeight;
 
   return bubble;
