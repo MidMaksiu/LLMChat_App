@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <title>LLM Chat MVP</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="container px-0">
+    <div class="row justify-content-center">
+      <div class="header-shell text-center mb-4">
+        <h1 class="app-title display-4">LLM Chat MVP</h1>
+        <p class="app-subtitle lead">A simple chat interface for testing LLM responses.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <aside class="col-md-2 d-none d-md-block sidebar me-5 pe-3">
+        <header class="mb-2">
+          <h2 class="sidebar-title text-uppercase mb-1 text-center">Menu</h2>
+        </header>
+
+        <button
+          id="param_btn"
+          class="btn app-btn-outline mt-2 w-100"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#settingsOffcanvas"
+          aria-controls="settingsOffcanvas"
+        >
+          ⚙️ Settings
+        </button>
+      </aside>
+
+      <div class="col-12 col-md-9 ps-5 pe-0">
+        <div class="chat-shell p-4">
+          <header class="mb-3 text-center">
+            <h2 class="chat-title m-0">LLM Chat</h2>
+          </header>
+
+          <section
+            class="overflow-auto border rounded p-3 mb-3 bg-panel border-custom"
+            aria-label="Chat Messages"
+          >
+            <div
+              id="chatMessages"
+              class="chat-messages"
+              aria-live="polite"
+              aria-label="Conversation"
+            ></div>
+          </section>
+
+          <div class="status" id="status"></div>
+          <div class="error" id="error"></div>
+
+          <form id="chatForm" class="mt-2" aria-label="Sending Message">
+            <label class="label" for="prompt">Prompt</label>
+            <textarea
+              id="prompt"
+              class="textarea"
+              rows="5"
+              placeholder="Ask anything..."
+            ></textarea>
+
+            <div class="d-flex align-items-center mt-3">
+              <div class="d-flex gap-2">
+                <button id="sendBtn" type="button" class="btn app-btn-primary">
+                  Send
+                </button>
+                <button id="clearBtn" type="button" class="btn app-btn-secondary">
+                  Clear Input
+                </button>
+              </div>
+
+              <button id="newChatBtn" type="button" class="btn app-btn-danger-outline ms-auto">
+                New Chat
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="settingsOffcanvas" aria-labelledby="settingsTitle">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="settingsTitle">Model Settings</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body">
+      <form id="settingsForm" class="vstack gap-3">
+        <div>
+          <label for="modelSelect" class="form-label">Model</label>
+          <select id="modelSelect" class="form-select form-select-sm">
+            <option value="">Loading models...</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="d-flex justify-content-between align-items-center">
+            <label for="temperatureRange" class="form-label mb-0">Temperature</label>
+            <span class="badge text-bg-secondary" id="temperatureValue">0.7</span>
+          </div>
+          <input type="range" class="form-range" id="temperatureRange" min="0" max="2" step="0.1" value="0.7" />
+        </div>
+
+        <div>
+          <label for="maxTokensInput" class="form-label">Max tokens</label>
+          <input type="number" class="form-control form-control-sm" id="maxTokensInput" min="1" max="4096" step="1" value="1024" />
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="button" class="btn app-btn-reset w-100" id="resetSettingsBtn">
+            Reset
+          </button>
+          <button type="button" class="btn app-btn-primary w-100" id="applySettingsBtn">
+            Apply
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

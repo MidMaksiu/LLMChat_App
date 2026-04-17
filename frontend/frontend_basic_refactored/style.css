@@ -10,7 +10,9 @@
   --offcanvas-text: #1fcc7c;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -19,21 +21,27 @@ body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-.h4{
-    margin: 0 0 8px;
-    font-size: 28px;
-    letter-spacing: 1px;
-    color: rgba(22, 201, 57, 0.65);
-    text-shadow: 0px 0px 4px rgba(26, 201, 70, 0.65);
-  
-
+.app-title {
+  margin-top: 20px;
 }
 
-.h6 {
+.app-subtitle {
+  text-shadow: whitesmoke 0px 0px 8px;
+}
+
+.chat-title {
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: 1px;
+  color: rgba(22, 201, 57, 0.65);
+  text-shadow: 0px 0px 4px rgba(26, 201, 70, 0.65);
+}
+
+.sidebar-title {
   margin-top: 30px;
   font-size: 30px;
   letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.828) !important;
+  color: rgba(255, 255, 255, 0.828);
   text-shadow: #908888 0px 0px 2px;
 }
 
@@ -56,36 +64,25 @@ body {
   outline: none;
   resize: vertical;
 }
+
+.textarea:focus {
+  border-color: rgb(71, 168, 136);
+}
+
+.textarea:focus::placeholder {
+  color: rgb(71, 168, 136);
+  opacity: 1;
+}
+
 aside {
   padding-right: 30px;
   background: var(--panel);
   border-radius: 20px;
 }
-aside h3 {
-  color: var(--text);
-  margin-bottom: 16px;
-}
-h1
-{
-  margin-top: 20px;
-}
-.lead
-{
-text-shadow: whitesmoke 0px 0px 8px;
-}
-aside label {
-  color: var(--muted);
-}
-.sidebar{
-  border: 1px solid rgba(45, 196, 82, 0.55); /* zielona poświata */
+
+.sidebar {
+  border: 1px solid rgba(45, 196, 82, 0.55);
   box-shadow: 0 0 0 1px rgba(50, 255, 118, 0.18), 0 0 24px rgba(24, 243, 97, 0.08);
-}
-.textarea:focus {
-  border-color: rgb(71, 168, 136);
-}
-.textarea:focus::placeholder {
-  color: rgb(71, 168, 136);
-  opacity: 1;
 }
 
 .bg-panel {
@@ -98,31 +95,81 @@ aside label {
   box-shadow: 0 18px 40px rgba(35, 201, 66, 0.18);
   border-radius: 24px;
 }
-.btn {
+
+.app-btn-primary {
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
   background: var(--btn);
-  color: rgb(255, 255, 255);
+  color: #ffffff;
   cursor: pointer;
   font-weight: 600;
 }
 
-.btn:hover { background: var(--btn-hover); }
+.app-btn-primary:hover {
+  background: var(--btn-hover);
+}
 
-.btn:disabled {
+.app-btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background: transparent;
+.app-btn-secondary {
+  padding: 10px 14px;
   border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
   color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.btn-secondary:hover {
+.app-btn-secondary:hover {
   background: rgba(255, 255, 255, 0.06);
+}
+
+.app-btn-outline {
+  padding: 10px 14px;
+  border: 1px solid rgba(45, 196, 82, 0.55);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.app-btn-outline:hover {
+  background: rgba(28, 97, 65, 0.15);
+  border-color: rgba(50, 255, 118, 0.45);
+}
+
+.app-btn-danger-outline {
+  padding: 10px 14px;
+  border: 1px solid var(--danger);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--danger);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.app-btn-danger-outline:hover {
+  background: rgba(255, 77, 109, 0.12);
+}
+
+.app-btn-reset {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #840c0c;
+  color: #fdfdfd;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.app-btn-reset:hover {
+  background: #a10f0f;
 }
 
 .status {
@@ -135,9 +182,9 @@ aside label {
   color: var(--danger);
   min-height: 18px;
 }
-.border-custom
-{
-    border: 2px solid rgb(10, 91, 37) !important; 
+
+.border-custom {
+  border: 2px solid rgb(10, 91, 37) !important;
 }
 
 .offcanvas {
@@ -151,14 +198,12 @@ aside label {
   z-index: 1080;
 }
 
-/* Style offcanvas form labels to match main page */
 #settingsOffcanvas .form-label {
   color: var(--offcanvas-text);
   font-size: 18px;
   margin: 14px 0 8px;
 }
 
-/* Style offcanvas header to match */
 .offcanvas-header {
   border-bottom: 1px solid var(--border);
   border-radius: 0 24px 0 0;
@@ -169,27 +214,21 @@ aside label {
   color: var(--offcanvas-text);
 }
 
-/* Dark inputs inside the offcanvas (settings panel) */
 #settingsOffcanvas .form-control,
 #settingsOffcanvas .form-select {
-  background-color: #0f172a;   
-  border-color: #1f2a44;       
-  color: #e5e7eb;              
+  background-color: #0f172a;
+  border-color: #1f2a44;
+  color: #e5e7eb;
 }
 
-
-
-
-/* Focus highlighting */ 
 #settingsOffcanvas .form-control:focus,
 #settingsOffcanvas .form-select:focus {
   background-color: #0f172a;
-  border-color: #22c55e;     
+  border-color: #22c55e;
   box-shadow: 0 0 0 0.2rem rgba(34, 197, 94, 0.25);
   color: #ffffff;
 }
 
-/* Changed the dropdown to have a custom arrow and color */
 #settingsOffcanvas .form-select {
   background-color: #0f172a;
   border-color: #3e967f;
@@ -255,107 +294,91 @@ aside label {
   box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.06);
 }
 
-/* Options in dropdown (sometimes limited by browser, but let's try) */
 #settingsOffcanvas option {
   background: #0f172a;
   color: #ffffff;
 }
-#resetSettingsBtn {
-  background: #840c0c;
-  color: #fdfdfd;
-}
+
 #settingsOffcanvas .btn-close {
-  filter: invert(1);        /* makes black white */
-  opacity: 1;               /* bootstrap by default gives smaller */
+  filter: invert(1);
+  opacity: 1;
 }
 
-/* Chat bubbles */
-.chat-messages{
+.chat-messages {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 240px;      /* so it's not "empty" */
-  max-height: 420px;      /* scroll control */
+  min-height: 240px;
+  max-height: 420px;
 }
 
-.msg{
+.msg {
   display: flex;
 }
 
-.msg-user{
+.msg-user {
   justify-content: flex-end;
 }
 
-.msg-assistant{
+.msg-assistant {
   justify-content: flex-start;
 }
 
-/* Opcjonalnie: system message na środku */
-.msg-system{
+.msg-system {
   justify-content: center;
 }
 
-.bubble{
+.bubble {
   max-width: 78%;
   padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid rgba(255,255,255,0.10);
   line-height: 1.35;
   white-space: pre-wrap;
-  word-wrap: break-word;
-
-  /* animacja wejścia */
+  overflow-wrap: break-word;
   animation: bubbleIn 160ms ease-out;
 }
 
-.bubble-user{
-  background: rgba(28, 97, 65, 0.85); /* zielony podobny do Twoich btn */
-  border-color: rgba(34,197,94,0.25);
+.bubble-user {
+  background: rgba(28, 97, 65, 0.85);
+  border-color: rgba(34, 197, 94, 0.25);
 }
 
-.bubble-assistant{
-  background: #0f172a; /* ciemne */
+.bubble-assistant {
+  background: #0f172a;
   border-color: #1f2a44;
 }
 
-.bubble-system{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.12);
+.bubble-system {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
   color: var(--muted);
   font-size: 13px;
 }
 
-/* Typing dots */
-.bubble.typing{
+.bubble.typing {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-.dot{
+.dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.75);
+  background: rgba(255, 255, 255, 0.75);
   animation: dotPulse 900ms infinite ease-in-out;
 }
-#newChatBtn{
-  background: transparent;
-  border: 1px solid var(--danger);
-  color: var(--danger);
-}
-#newChatBtn:hover{
-  background: rgba(255, 77, 109, 0.12);
-}
-.dot:nth-child(2){ animation-delay: 150ms; }
-.dot:nth-child(3){ animation-delay: 300ms; }
 
-@keyframes bubbleIn{
+.dot:nth-child(2) { animation-delay: 150ms; }
+.dot:nth-child(3) { animation-delay: 300ms; }
+
+@keyframes bubbleIn {
   from { transform: translateY(6px); opacity: 0; }
-  to   { transform: translateY(0);   opacity: 1; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes dotPulse{
+@keyframes dotPulse {
   0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
-  40%           { transform: translateY(-3px); opacity: 1; }
+  40% { transform: translateY(-3px); opacity: 1; }
 }

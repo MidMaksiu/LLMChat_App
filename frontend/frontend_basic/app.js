@@ -112,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   applyBtn.addEventListener("click", () => {
     const prevModel = settings.model;
-
     settings.model = modelSelect.value;
     settings.temperature = Number(temperatureRange.value);
     settings.max_tokens = Number(maxTokensInput.value);
@@ -219,8 +218,11 @@ while (!done) {
       break;
     }
 
-    const obj = JSON.parse(data); // { delta: "..." }
-    const delta = obj.delta || "";
+    let obj;
+    try {
+      obj = JSON.parse(data);
+      } catch {continue;} // nie parsuj, jeśli nie JSON
+        const delta = obj.delta || "";
 
     if (delta) {
       if (!assistantBubble) {
@@ -271,6 +273,7 @@ promptEl.addEventListener("keydown", (e) => {
 });
 function clearVisibleChat() {
   promptEl.value = "";
+  promptEl.focus();
   errorEl.textContent = "";
   statusEl.textContent = "";
   hideTyping();
