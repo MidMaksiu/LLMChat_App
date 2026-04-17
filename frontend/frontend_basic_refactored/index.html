@@ -55,30 +55,33 @@
           <div class="status" id="status"></div>
           <div class="error" id="error"></div>
 
-          <form id="chatForm" class="mt-2" aria-label="Sending Message">
-            <label class="label" for="prompt">Prompt</label>
-            <textarea
-              id="prompt"
-              class="textarea"
-              rows="5"
-              placeholder="Ask anything..."
-            ></textarea>
+      <form id="chatForm" class="mt-2" aria-label="Sending Message">
+        <label class="label" for="prompt">Prompt</label>
+        <textarea
+          id="prompt"
+          class="textarea"
+          rows="5"
+          placeholder="Ask anything..."
+        ></textarea>
 
-            <div class="d-flex align-items-center mt-3">
-              <div class="d-flex gap-2">
-                <button id="sendBtn" type="button" class="btn app-btn-primary">
-                  Send
-                </button>
-                <button id="clearBtn" type="button" class="btn app-btn-secondary">
-                  Clear Input
-                </button>
-              </div>
+        <div class="d-flex align-items-center mt-3">
+          <div class="d-flex gap-2">
+            <button id="sendBtn" type="submit" class="btn app-btn-primary">
+              Send
+            </button>
+            <button id="stopBtn" type="button" class="btn app-btn-warning" hidden>
+              Stop
+            </button>
+            <button id="clearBtn" type="button" class="btn app-btn-secondary">
+              Clear Input
+            </button>
+          </div>
 
-              <button id="newChatBtn" type="button" class="btn app-btn-danger-outline ms-auto">
-                New Chat
-              </button>
-            </div>
-          </form>
+          <button id="newChatBtn" type="button" class="btn app-btn-danger-outline ms-auto">
+            New Chat
+          </button>
+        </div>
+      </form>
         </div>
       </div>
     </div>
@@ -125,6 +128,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

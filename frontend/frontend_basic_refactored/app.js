@@ -2,11 +2,14 @@ const API_BASE_URL = "http://127.0.0.1:8000";
 
 const promptEl = document.getElementById("prompt");
 const chatEl = document.getElementById("chatMessages");
+const chatForm = document.getElementById("chatForm");
 const sendBtn = document.getElementById("sendBtn");
+const stopBtn = document.getElementById("stopBtn");
 const clearBtn = document.getElementById("clearBtn");
 const statusEl = document.getElementById("status");
 const errorEl = document.getElementById("error");
 const newChatBtn = document.getElementById("newChatBtn");
+
 
 const state = {
   settings: {
@@ -17,15 +20,33 @@ const state = {
   conversation: [],
   typingNode: null,
   isGenerating: false,
+  abortController: null,
 };
 
+function updateActionButtons() {
+  sendBtn.hidden = state.isGenerating;
+  stopBtn.hidden = !state.isGenerating;
+}
+function finalizeAssistantBubble(bubble, content) {
+  if (!bubble) return;
+  
+  bubble.classList.add("bubble-markdown");
+  bubble.innerHTML = renderMarkdownToHtml(content);
+}
 function roleClass(role){
   if (role === "user") return "user";
   if (role === "assistant") return "assistant";
   if (role === "system") return "system";
   return "assistant";
 }
+function renderMarkdownToHtml(text) {
+  if (!text) return "";
 
+  return marked.parse(text, {
+    breaks: true,
+    gfm: true,
+  });
+}
 async function loadModels(modelSelect) {
   modelSelect.disabled = true;
   modelSelect.innerHTML = `<option>Loading...</option>`;
@@ -122,18 +143,20 @@ function resetConversation() {
 
 function startGeneratingState() {
   state.isGenerating = true;
-  sendBtn.disabled = true;
+  sendBtn.disabled = false;
   statusEl.textContent = "Generating...";
   showTyping();
+  updateActionButtons();
 }
 
 function stopGeneratingState() {
   state.isGenerating = false;
+  state.abortController = null;
   sendBtn.disabled = false;
   statusEl.textContent = "";
   hideTyping();
+  updateActionButtons();
 }
-
 function saveSettings() {
   localStorage.setItem("chatSettings", JSON.stringify(state.settings));
 }
@@ -152,6 +175,11 @@ function loadSavedSettings() {
     // ignore broken localStorage data
   }
 }
+function stopGenerating() {
+  if (state.abortController) {
+    state.abortController.abort();
+  }
+}
 document.addEventListener("DOMContentLoaded", () => {
   const modelSelect = document.getElementById("modelSelect");
   const temperatureRange = document.getElementById("temperatureRange");
@@ -160,6 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("resetSettingsBtn");
   const applyBtn = document.getElementById("applySettingsBtn");
 
+  marked.setOptions({
+    breaks: true,
+    gfm: true,
+  });
+  updateActionButtons();
   loadSavedSettings();
 
   temperatureRange.value = String(state.settings.temperature);
@@ -213,45 +246,103 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-async function sendPrompt() {
-  if (state.isGenerating) return;
+function getPromptValue() {
+  return promptEl.value.trim();
+}
 
-  errorEl.textContent = "";
-
-  const prompt = promptEl.value.trim();
-  if (!prompt) return;
-
+function appendUserMessage(prompt) {
   addBubble("user", prompt);
   state.conversation.push({ role: "user", content: prompt });
-  promptEl.value = "";
+}
 
-  startGeneratingState();
+function buildChatRequestBody() {
+  return {
+    messages: state.conversation,
+    model: state.settings.model,
+    temperature: state.settings.temperature,
+    max_tokens: state.settings.maxTokens,
+  };
+}
 
+async function createChatStreamRequest() {
+  state.abortController = new AbortController();
+
+  const res = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    signal: state.abortController.signal,
+    body: JSON.stringify(buildChatRequestBody()),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`HTTP ${res.status}: ${text}`);
+  }
+
+  return res;
+}
+function appendAssistantMessageToHistory(content) {
+  state.conversation.push({
+    role: "assistant",
+    content,
+  });
+}
+
+function handleSendPromptError(err) {
+  if (err.name === "AbortError") {
+    const message = "Generation stopped.";
+    addBubble("system", message);
+  } else {
+    errorEl.textContent = err?.message || "Unknown error";
+  }
+}
+function parseSsePart(part) {
+  const lines = part.split("\n").map((l) => l.trim()).filter(Boolean);
+
+  if (lines[0]?.startsWith("event: error")) {
+    const dataLine = lines.find((l) => l.startsWith("data:"));
+    if (dataLine) {
+      const payload = JSON.parse(dataLine.slice(5).trim());
+      throw new Error(payload.error || "Stream error");
+    }
+  }
+
+  const dataLine = lines.find((l) => l.startsWith("data:"));
+  if (!dataLine) {
+    return { type: "ignore" };
+  }
+
+  const data = dataLine.slice(5).trim();
+
+  if (data === "[DONE]") {
+    return { type: "done" };
+  }
+
+  let obj;
+  try {
+    obj = JSON.parse(data);
+  } catch {
+    return { type: "ignore" };
+  }
+
+  return {
+    type: "delta",
+    delta: obj.delta || "",
+  };
+}
+
+async function streamAssistantResponse() {
+  const res = await createChatStreamRequest();
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+
+  let buffer = "";
+  let done = false;
   let assistantBubble = null;
+  let assistantContent = "";
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/chat/stream`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        messages: state.conversation,
-        model: state.settings.model,
-        temperature: state.settings.temperature,
-        max_tokens: state.settings.maxTokens,
-      }),
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`HTTP ${res.status}: ${text}`);
-    }
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-
-    let buffer = "";
-    let done = false;
-
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       if (doneReading) break;
@@ -262,62 +353,68 @@ async function sendPrompt() {
       buffer = parts.pop();
 
       for (const part of parts) {
-        const lines = part.split("\n").map((l) => l.trim()).filter(Boolean);
+        const result = parseSsePart(part);
 
-        if (lines[0]?.startsWith("event: error")) {
-          const dataLine = lines.find((l) => l.startsWith("data:"));
-          if (dataLine) {
-            const payload = JSON.parse(dataLine.slice(5).trim());
-            throw new Error(payload.error || "Stream error");
-          }
-        }
+        if (result.type === "ignore") continue;
 
-        const dataLine = lines.find((l) => l.startsWith("data:"));
-        if (!dataLine) continue;
-
-        const data = dataLine.slice(5).trim();
-
-        if (data === "[DONE]") {
+        if (result.type === "done") {
           done = true;
           break;
         }
 
-        let obj;
-        try {
-          obj = JSON.parse(data);
-        } catch {
-          continue;
-        }
-
-        const delta = obj.delta || "";
-
-        if (delta) {
-          if (!assistantBubble) {
-            hideTyping();
-            assistantBubble = addBubble("assistant", "");
-          }
-
-          assistantBubble.textContent += delta;
-          chatEl.scrollTop = chatEl.scrollHeight;
+        if (result.type === "delta" && result.delta) {
+          assistantContent += result.delta;
+          assistantBubble = appendAssistantDelta(assistantBubble, result.delta);
         }
       }
     }
-
-    if (assistantBubble) {
-      state.conversation.push({
-        role: "assistant",
-        content: assistantBubble.textContent,
-      });
-    } else {
-      addBubble("system", "No response from model.");
+  } finally {
+    if (assistantContent.trim().length > 0) {
+      appendAssistantMessageToHistory(assistantContent);
+      finalizeAssistantBubble(assistantBubble, assistantContent);
     }
+  }
+}
+function appendAssistantDelta(assistantBubble, delta) {
+  let bubble = assistantBubble;
+
+  if (!bubble) {
+    hideTyping();
+    bubble = addBubble("assistant", "");
+  }
+
+  bubble.textContent += delta;
+  chatEl.scrollTop = chatEl.scrollHeight;
+
+  return bubble;
+}
+async function sendPrompt() {
+  if (state.isGenerating) return;
+
+  errorEl.textContent = "";
+
+  const prompt = getPromptValue();
+  if (!prompt) return;
+
+  appendUserMessage(prompt);
+  clearInput();
+  startGeneratingState();
+
+  try {
+    await streamAssistantResponse();
   } catch (err) {
-    errorEl.textContent = err?.message || "Unknown error";
+    handleSendPromptError(err);
   } finally {
     stopGeneratingState();
   }
 }
-sendBtn.addEventListener("click", sendPrompt);
+
+
+chatForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  sendPrompt();
+});
+stopBtn.addEventListener("click", stopGenerating);
 
 clearBtn.addEventListener("click", clearInput);
 
@@ -326,6 +423,6 @@ newChatBtn.addEventListener("click", resetConversation);
 promptEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
-    sendPrompt();
+    chatForm.requestSubmit();
   }
 });
