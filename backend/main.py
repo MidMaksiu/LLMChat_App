@@ -1,28 +1,26 @@
+#Default setting loaded from .env
+from dotenv import load_dotenv
 import json
 import os
 from typing import List, Literal, Optional
-
 import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+#Get parameters from .env if emtpy, use default value
+load_dotenv()
+
 # LM Studio Address
 LM_STUDIO_BASE = os.getenv("LM_STUDIO_BASE", "http://127.0.0.1:1234")
 # Default Model
 DEFAULT_MODEL = os.getenv("LM_STUDIO_MODEL", "bielik-minitron-7b-v3.0-instruct")
 
+# Origins
 CORS_ORIGINS = os.getenv(
     "CORS_ORIGINS",
-    ",".join(
-        [
-            "http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:3001",
-            "http://localhost:3001",
-        ]
-    ),
+    "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5500,http://127.0.0.1:5500"
 )
 
 app = FastAPI()
@@ -66,7 +64,7 @@ def extract_delta_content(data_str: str) -> str:
         obj = json.loads(data_str)
         choice = (obj.get("choices") or [{}])[0]
         return (choice.get("delta") or {}).get("content") or ""
-
+    # Incase of wrong stream
     except Exception:
         return ""
 
