@@ -17,10 +17,10 @@
       <p class="app-subtitle">A simple chat interface</p>
     </div>
 
-    <aside class="sidebar">
-      <header class="mb-2">
-        <h2 class="sidebar-title text-uppercase mb-1 text-center">Menu</h2>
-      </header>
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <h2 class="sidebar-title text-uppercase mb-1 text-center">Menu</h2>
 
       <button
         id="param_btn"
@@ -31,7 +31,16 @@
         aria-controls="settingsOffcanvas">
         ⚙️ Settings
       </button>
-    </aside>
+    </div>
+
+    <div class="sidebar-section sidebar-history-shell">
+      <div class="history-section-header">
+        <span class="history-section-label">History</span>
+      </div>
+      <div id="historyList" class="history-list" aria-label="Chat history"></div>
+    </div>
+
+  </aside>
 
     <section class="chat-column ps-0">
       <div class="chat-shell p-3">

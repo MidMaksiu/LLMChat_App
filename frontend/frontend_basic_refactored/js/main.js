@@ -7,39 +7,53 @@ import { sendPrompt, stopGenerating, resetConversation } from "./chat.js";
 import { initSettings } from "./settings.js";
 import { startStatusPolling } from "./api.js";
 import { updateActionButtons, clearInput, sendBtn, stopBtn, clearBtn, newChatBtn, promptEl } from "./ui.js";
+import { state, loadSavedChats, createNewChat } from "./state.js";
+import { renderHistoryList, restoreChatMessages } from "./history.js";
 
 const chatForm = document.getElementById("chatForm");
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // Inicjalizacja marked (biblioteka globalna z CDN)
-  marked.setOptions({ breaks: true, gfm: true });
 
-  // Stan przycisków
-  updateActionButtons();
+    // Load saved chats and initialize the first chat session if none exist. 
+    // This ensures that users can continue previous conversations or start fresh ones seamlessly when they open the app.
+    loadSavedChats();
 
-  // Panel ustawień
-  await initSettings();
+    if (state.chats.length === 0) {
+    createNewChat();
+    }
 
-  // Polling statusu backendu
-  startStatusPolling();
+    renderHistoryList();
+    restoreChatMessages();
 
-  // --- Event listenery ---
+    // Initialize marked for markdown rendering in chat bubbles. 
+    marked.setOptions({ breaks: true, gfm: true });
 
-  chatForm.addEventListener("submit", (e) => {
+    // Button states
+    updateActionButtons();
+
+    // Settings initialization - loads saved settings, populates the settings form, and sets up event listeners for user interactions.
+    await initSettings();
+
+    // Poll backend status every 3 seconds to update the UI with the current status of the backend (e.g., online/offline, model loading).
+    startStatusPolling();
+
+    // --- Event listeners ---
+
+    chatForm.addEventListener("submit", (e) => {
     e.preventDefault();
     sendPrompt();
-  });
+    });
 
-  stopBtn.addEventListener("click", stopGenerating);
+    stopBtn.addEventListener("click", stopGenerating);
 
-  clearBtn.addEventListener("click", clearInput);
+    clearBtn.addEventListener("click", clearInput);
 
-  newChatBtn.addEventListener("click", resetConversation);
+    newChatBtn.addEventListener("click", resetConversation);
 
-  promptEl.addEventListener("keydown", (e) => {
+    promptEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      chatForm.requestSubmit();
+        e.preventDefault();
+        chatForm.requestSubmit();
     }
   });
 });

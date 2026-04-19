@@ -9,20 +9,20 @@ import { resetConversation } from "./chat.js";
 import { showError } from "./ui.js";
 
 export async function initSettings() {
-  const modelSelect      = document.getElementById("modelSelect");
+  const modelSelect = document.getElementById("modelSelect");
   const temperatureRange = document.getElementById("temperatureRange");
   const temperatureValue = document.getElementById("temperatureValue");
-  const maxTokensInput   = document.getElementById("maxTokensInput");
-  const resetBtn         = document.getElementById("resetSettingsBtn");
-  const applyBtn         = document.getElementById("applySettingsBtn");
+  const maxTokensInput = document.getElementById("maxTokensInput");
+  const resetBtn = document.getElementById("resetSettingsBtn");
+  const applyBtn = document.getElementById("applySettingsBtn");
 
-  // Załaduj zapisane ustawienia i wypełnij kontrolki
+  // Load saved settings and populate controls
   loadSavedSettings();
-  temperatureRange.value     = String(state.settings.temperature);
+  temperatureRange.value = String(state.settings.temperature);
   temperatureValue.textContent = Number(state.settings.temperature).toFixed(1);
-  maxTokensInput.value       = String(state.settings.maxTokens);
+  maxTokensInput.value = String(state.settings.maxTokens);
 
-  // Załaduj modele z backendu
+  // Load models from backend
   await loadModelsIntoSelect(modelSelect);
 
   // Live preview temperatury
@@ -38,17 +38,17 @@ export async function initSettings() {
     const nextMaxTokens  = Number(maxTokensInput.value);
 
     const hasChanges =
-      state.settings.model       !== nextModel      ||
+      state.settings.model !== nextModel      ||
       state.settings.temperature !== nextTemperature ||
-      state.settings.maxTokens   !== nextMaxTokens;
+      state.settings.maxTokens !== nextMaxTokens;
 
-    state.settings.model       = nextModel;
+    state.settings.model = nextModel;
     state.settings.temperature = nextTemperature;
-    state.settings.maxTokens   = nextMaxTokens;
+    state.settings.maxTokens = nextMaxTokens;
 
     if (hasChanges) saveSettings();
 
-    // Zamknij offcanvas
+    // Close offcanvas
     const el = document.getElementById("settingsOffcanvas");
     const offcanvas = bootstrap.Offcanvas.getInstance(el)
                    || bootstrap.Offcanvas.getOrCreateInstance(el);
@@ -59,22 +59,26 @@ export async function initSettings() {
       setTimeout(() => { applyBtn.textContent = "Apply"; }, 800);
     }
 
-    // Zmiana modelu = nowy czat
+    // Change of model may require resetting the conversation to avoid context issues, 
+    // changes in temperature or max tokens can be applied immediately without resetting.
     if (nextModel !== prevModel) resetConversation();
   });
 
-  // Reset do wartości domyślnych
+  // Reset to default settings
   resetBtn.addEventListener("click", () => {
-    state.settings = {
-      model: "bielik-minitron-7b-v3.0-instruct",
-      temperature: 0.7,
-      maxTokens: 1024,
-    };
 
-    modelSelect.value            = state.settings.model;
-    temperatureRange.value       = String(state.settings.temperature);
+  //Set default model to the first available one from the select options, or a hardcoded fallback if none are available.
+  const firstAvailableModel = modelSelect.options[0]?.value || "bielik-minitron-7b-v3.0-instruct";
+  state.settings = {
+    model: firstAvailableModel,
+    temperature: 0.7,
+    maxTokens: 1024,
+  };
+
+    modelSelect.value = state.settings.model;
+    temperatureRange.value = String(state.settings.temperature);
     temperatureValue.textContent = Number(state.settings.temperature).toFixed(1);
-    maxTokensInput.value         = String(state.settings.maxTokens);
+    maxTokensInput.value = String(state.settings.maxTokens);
 
     saveSettings();
   });
