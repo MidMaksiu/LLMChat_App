@@ -58,7 +58,7 @@ export function getActiveChat() {
 // Finally, it sets the newly created chat as the active chat.
 
 export function createNewChat() {
-  const chat = { id: generateId(), title: "New chat", messages: [] };
+  const chat = { id: generateId(), title: "New chat", systemPrompt: "", messages: [] };
   state.chats.unshift(chat);
   if (state.chats.length > MAX_CHATS) {
     state.chats = state.chats.slice(0, MAX_CHATS);
@@ -116,6 +116,15 @@ export function buildRequestMessages() {
   return (getActiveChat()?.messages || []).slice(-CONTEXT_WINDOW);
 }
 
+// Updates chat-specific settings
+export function updateChatSettings(id, { title, systemPrompt }) {
+  const chat = state.chats.find((c) => c.id === id);
+  if (!chat) return;
+  if (title !== undefined) chat.title = title;
+  if (systemPrompt !== undefined) chat.systemPrompt = systemPrompt;
+  saveChats();
+}
+
 // --- Chats (localStorage) ---
 export function saveChats() {
   localStorage.setItem("chatHistory", JSON.stringify({
@@ -132,6 +141,6 @@ export function loadSavedChats() {
     state.chats = parsed.chats || [];
     state.activeChatId = parsed.activeChatId || null;
   } catch {
-    // ignorujemy uszkodzone dane
+    // Ignore broken data 
   }
 }

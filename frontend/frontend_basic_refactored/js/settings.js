@@ -9,13 +9,27 @@ import { resetConversation } from "./chat.js";
 import { showError } from "./ui.js";
 
 export async function initSettings() {
-  const modelSelect = document.getElementById("modelSelect");
-  const temperatureRange = document.getElementById("temperatureRange");
-  const temperatureValue = document.getElementById("temperatureValue");
-  const maxTokensInput = document.getElementById("maxTokensInput");
-  const resetBtn = document.getElementById("resetSettingsBtn");
-  const applyBtn = document.getElementById("applySettingsBtn");
+    const modelSelect = document.getElementById("modelSelect");
+    const temperatureRange = document.getElementById("temperatureRange");
+    const temperatureValue = document.getElementById("temperatureValue");
+    const maxTokensInput = document.getElementById("maxTokensInput");
+    const resetBtn = document.getElementById("resetSettingsBtn");
+    const applyBtn = document.getElementById("applySettingsBtn");
 
+
+    const settingsOffcanvasEl = document.getElementById("settingsOffcanvas");
+
+    settingsOffcanvasEl.addEventListener("hide.bs.offcanvas", (e) => {
+        const maxTokensVal = Number(maxTokensInput.value);
+        if (!maxTokensVal || maxTokensVal < 1 || maxTokensVal > 4096) {
+        e.preventDefault(); // zablokuj zamknięcie
+        maxTokensInput.classList.add("is-invalid");
+        maxTokensInput.focus();
+        }
+    });
+    maxTokensInput.addEventListener("input", () => {
+        maxTokensInput.classList.remove("is-invalid");
+    });
   // Load saved settings and populate controls
   loadSavedSettings();
   temperatureRange.value = String(state.settings.temperature);
@@ -24,7 +38,7 @@ export async function initSettings() {
 
   // Load models from backend
   await loadModelsIntoSelect(modelSelect);
-
+  
   // Live preview temperatury
   temperatureRange.addEventListener("input", () => {
     temperatureValue.textContent = Number(temperatureRange.value).toFixed(1);
@@ -32,6 +46,7 @@ export async function initSettings() {
 
   // Apply
   applyBtn.addEventListener("click", () => {
+
     const prevModel      = state.settings.model;
     const nextModel      = modelSelect.value;
     const nextTemperature = Number(temperatureRange.value);
@@ -75,6 +90,8 @@ export async function initSettings() {
     maxTokens: 1024,
   };
 
+    //Remove error if existing, update controls to reflect default settings, and save them.
+    maxTokensInput.classList.remove("is-invalid");
     modelSelect.value = state.settings.model;
     temperatureRange.value = String(state.settings.temperature);
     temperatureValue.textContent = Number(state.settings.temperature).toFixed(1);
@@ -83,6 +100,7 @@ export async function initSettings() {
     saveSettings();
   });
 }
+
 
 async function loadModelsIntoSelect(modelSelect) {
   modelSelect.disabled = true;

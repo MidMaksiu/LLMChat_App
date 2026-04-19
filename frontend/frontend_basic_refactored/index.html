@@ -44,6 +44,8 @@
 
     <section class="chat-column ps-0">
       <div class="chat-shell p-3">
+        
+
         <section
           class="chat-panel border rounded p-2 mb-3 bg-panel border-custom"
           aria-label="Chat Messages">
@@ -104,7 +106,7 @@
   </div>
 
   <div class="offcanvas-body">
-    <form id="settingsForm" class="vstack gap-3">
+    <form id="settingsForm" class="vstack gap-3" novalidate>
       <div>
         <label for="modelSelect" class="form-label">Model</label>
         <select id="modelSelect" class="form-select form-select-sm">
@@ -135,6 +137,29 @@
 
       </div>
     </form>
+    <hr class="sidebar-divider">
+
+    <div class="vstack gap-2">
+      <div>
+        <p class="offcanvas-section-label">Chat Settings</p>
+        <p class="offcanvas-section-hint">Applies to the currently active chat only.</p>
+      </div>
+      <hr class="sidebar-divider">
+      <div>
+        <label for="chatTitleInput" class="form-label">Chat title</label>
+        <input type="text" class="form-control form-control-sm" id="chatTitleInput" placeholder="New chat" maxlength="60" />
+      </div>
+
+      <div>
+        <label for="chatSystemPromptInput" class="form-label">System prompt</label>
+        <textarea class="form-control form-control-sm" id="chatSystemPromptInput" rows="3" placeholder="e.g. You are a helpful assistant..."></textarea>
+      </div>
+
+      <button type="button" class="btn app-btn-primary w-100 mt-2" id="saveChatSettingsBtn">
+        Save chat settings
+      </button>
+    </div>
+
   </div>
 </div>
 

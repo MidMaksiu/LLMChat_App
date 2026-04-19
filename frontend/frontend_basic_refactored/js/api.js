@@ -52,8 +52,15 @@ export function startStatusPolling() {
 // --- Streaming ---
 
 function buildPayload() {
+  const chat = state.chats.find((c) => c.id === state.activeChatId);
+  const systemPrompt = chat?.systemPrompt?.trim();
+
+  const messages = systemPrompt
+    ? [{ role: "system", content: systemPrompt }, ...buildRequestMessages()]
+    : buildRequestMessages();
+
   return {
-    messages: buildRequestMessages(),
+    messages,
     model: state.settings.model,
     temperature: state.settings.temperature,
     max_tokens: state.settings.maxTokens,

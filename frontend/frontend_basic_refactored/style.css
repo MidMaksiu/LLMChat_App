@@ -71,6 +71,8 @@ body {
     radial-gradient(circle at top left, rgba(24, 140, 255, 0.08), transparent 28%),
     radial-gradient(circle at top right, rgba(24, 140, 255, 0.05), transparent 24%),
     linear-gradient(180deg, #030816 0%, #040b18 45%, #020611 100%);
+  height: 100vh;        /* ← dodaj */
+  overflow: hidden;     /* ← dodaj */
 }
 
 /* =========================
@@ -89,7 +91,8 @@ body {
 .dashboard-layout {
   width: 100%;
   max-width: 1500px;
-  min-height: 100vh;
+  height: 100vh; 
+  overflow: hidden; 
   margin: 0 0 0 20px;
   padding-top: 18px;
   padding-bottom: 24px;
@@ -131,6 +134,9 @@ body {
   border-radius: 22px;
   background: linear-gradient(180deg, rgba(10, 19, 36, 0.95), rgba(8, 15, 29, 0.98));
   box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* =========================
@@ -643,10 +649,15 @@ body {
 }
 
 #settingsOffcanvas .form-control,
-#settingsOffcanvas .form-select {
+#settingsOffcanvas .form-select
+#settingsOffcanvas .textarea {
   border-color: rgba(77, 129, 255, 0.18);
   color: #e5efff;
   background-color: #0a1324;
+}
+#settingsOffcanvas .form-control::placeholder,
+#settingsOffcanvas textarea::placeholder {
+  color: #3a5080;
 }
 
 #settingsOffcanvas .form-control:focus,
@@ -734,6 +745,26 @@ body {
   filter: invert(1);
   opacity: 1;
 }
+
+#settingsOffcanvas .is-invalid {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 0 0.2rem rgba(255, 92, 122, 0.18) !important;
+}
+
+.offcanvas-section-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: #eef5ff;
+  margin: 0 0 2px;
+  font-family: 'Syne', sans-serif;
+}
+
+.offcanvas-section-hint {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 0;
+}
+
 
 /* =========================
    CONNECTION STATUS
@@ -844,6 +875,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: 100%;         /* ← dodaj */
 }
 
 .history-section {
@@ -955,10 +987,10 @@ body {
 .sidebar-divider {
   border: none;
   border-top: 1px solid rgba(31, 143, 255, 0.92);
-  margin: 15px 0 0;
+  margin: 8 0 0;
 }
 .sidebar-section {
-  padding: 15px;
+  padding: 8px;
   border: 1px solid rgba(56, 124, 255, 0.18);
   border-radius: var(--radius-sm);
   background: rgba(15, 28, 54, 0.75); 

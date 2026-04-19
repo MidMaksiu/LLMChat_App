@@ -2,7 +2,7 @@
 //  main.js — punkt wejścia aplikacji
 //  Tylko inicjalizacja i event listenery. Zero logiki biznesowej.
 // ============================================================
-
+import { populateChatSettings } from "./chat_settings.js";
 import { sendPrompt, stopGenerating, resetConversation } from "./chat.js";
 import { initSettings } from "./settings.js";
 import { startStatusPolling } from "./api.js";
