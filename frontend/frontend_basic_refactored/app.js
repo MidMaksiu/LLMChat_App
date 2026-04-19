@@ -6,9 +6,11 @@ const chatForm = document.getElementById("chatForm");
 const sendBtn = document.getElementById("sendBtn");
 const stopBtn = document.getElementById("stopBtn");
 const clearBtn = document.getElementById("clearBtn");
-const statusEl = document.getElementById("status");
+const activityStatusEl = document.getElementById("status");
 const errorEl = document.getElementById("error");
 const newChatBtn = document.getElementById("newChatBtn");
+const connectionStatusEl = document.getElementById("connectionStatus");
+const connectionStatusTextEl = document.getElementById("connectionStatusText");
 
 
 const state = {
@@ -21,6 +23,7 @@ const state = {
   typingNode: null,
   isGenerating: false,
   abortController: null,
+  statusIntervalId: null,
 };
 
 function updateActionButtons() {
@@ -33,20 +36,18 @@ function finalizeAssistantBubble(bubble, content) {
   bubble.classList.add("bubble-markdown");
   bubble.innerHTML = renderMarkdownToHtml(content);
 }
-function roleClass(role){
-  if (role === "user") return "user";
-  if (role === "assistant") return "assistant";
-  if (role === "system") return "system";
-  return "assistant";
-}
+
 function renderMarkdownToHtml(text) {
   if (!text) return "";
 
-  return marked.parse(text, {
+  const rawHTML = marked.parse(text, {
     breaks: true,
     gfm: true,
   });
+  return DOMPurify.sanitize(rawHTML);
 }
+
+
 async function loadModels(modelSelect) {
   modelSelect.disabled = true;
   modelSelect.innerHTML = `<option>Loading...</option>`;
@@ -84,7 +85,9 @@ async function loadModels(modelSelect) {
 }
 
 function addBubble(role, content){
-  const side = roleClass(role);
+  const side = role === "user" ? "user" :
+             role === "system" ? "system" :
+             "assistant";
 
   const row = document.createElement("div");
   row.className = `msg msg-${side}`;
@@ -127,10 +130,13 @@ function clearInput() {
   promptEl.value = "";
   promptEl.focus();
 }
+function setActivityStatus(message) {
+  activityStatusEl.textContent = message;
+}
 
 function clearVisibleChat() {
   errorEl.textContent = "";
-  statusEl.textContent = "";
+  setActivityStatus("");
   hideTyping();
   chatEl.innerHTML = "";
 }
@@ -143,8 +149,7 @@ function resetConversation() {
 
 function startGeneratingState() {
   state.isGenerating = true;
-  sendBtn.disabled = false;
-  statusEl.textContent = "Generating...";
+  setActivityStatus("Generating...");
   showTyping();
   updateActionButtons();
 }
@@ -152,8 +157,7 @@ function startGeneratingState() {
 function stopGeneratingState() {
   state.isGenerating = false;
   state.abortController = null;
-  sendBtn.disabled = false;
-  statusEl.textContent = "";
+  setActivityStatus("");
   hideTyping();
   updateActionButtons();
 }
@@ -180,6 +184,42 @@ function stopGenerating() {
     state.abortController.abort();
   }
 }
+
+function setConnectionStatus(connected, label) {
+  connectionStatusEl.classList.toggle("connected", connected);
+  connectionStatusEl.classList.toggle("disconnected", !connected);
+  connectionStatusTextEl.textContent = label;
+}
+async function loadBackendStatus() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/status`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (data.ok && data.lm_studio_reachable) {
+      setConnectionStatus(true, `Connected  (${data.models_available})`);
+      return;
+    }
+
+    setConnectionStatus(false, "Disconnected");
+  } catch {
+    setConnectionStatus(false, "Disconnected");
+  }
+}
+function startStatusPolling() {
+  if (state.statusIntervalId) {
+    clearInterval(state.statusIntervalId);
+  }
+
+  loadBackendStatus();
+  state.statusIntervalId = setInterval(() => {
+    loadBackendStatus();
+  }, 3000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const modelSelect = document.getElementById("modelSelect");
   const temperatureRange = document.getElementById("temperatureRange");
@@ -188,12 +228,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("resetSettingsBtn");
   const applyBtn = document.getElementById("applySettingsBtn");
 
+
   marked.setOptions({
     breaks: true,
     gfm: true,
   });
   updateActionButtons();
   loadSavedSettings();
+  startStatusPolling();
+
 
   temperatureRange.value = String(state.settings.temperature);
   temperatureValue.textContent = Number(state.settings.temperature).toFixed(1);
@@ -208,26 +251,44 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   applyBtn.addEventListener("click", () => {
-    const prevModel = state.settings.model;
+  const prevModel = state.settings.model;
 
-    state.settings.model = modelSelect.value;
-    state.settings.temperature = Number(temperatureRange.value);
-    state.settings.maxTokens = Number(maxTokensInput.value);
+  const nextModel = modelSelect.value;
+  const nextTemperature = Number(temperatureRange.value);
+  const nextMaxTokens = Number(maxTokensInput.value);
 
+  const hasChanges =
+    state.settings.model !== nextModel ||
+    state.settings.temperature !== nextTemperature ||
+    state.settings.maxTokens !== nextMaxTokens;
+
+  state.settings.model = nextModel;
+  state.settings.temperature = nextTemperature;
+  state.settings.maxTokens = nextMaxTokens;
+
+  if (hasChanges) {
     saveSettings();
+  }
 
-    if (state.settings.model !== prevModel) {
-      resetConversation();
-    }
+  const settingsOffcanvasEl = document.getElementById("settingsOffcanvas");
+  const settingsOffcanvas =
+    bootstrap.Offcanvas.getInstance(settingsOffcanvasEl) ||
+    bootstrap.Offcanvas.getOrCreateInstance(settingsOffcanvasEl);
 
-    bootstrap.Offcanvas.getOrCreateInstance(
-      document.getElementById("settingsOffcanvas")
-    ).hide();
+  settingsOffcanvas.hide();
 
+  if (hasChanges) {
     applyBtn.textContent = "Saved ✓";
     setTimeout(() => {
       applyBtn.textContent = "Apply";
     }, 800);
+  } else {
+    applyBtn.textContent = "Apply";
+  }
+
+  if (nextModel !== prevModel) {
+    resetConversation();
+  }
   });
 
   resetBtn.addEventListener("click", () => {
@@ -302,7 +363,12 @@ function parseSsePart(part) {
   if (lines[0]?.startsWith("event: error")) {
     const dataLine = lines.find((l) => l.startsWith("data:"));
     if (dataLine) {
-      const payload = JSON.parse(dataLine.slice(5).trim());
+      let payload;
+      try {
+        payload = JSON.parse(dataLine.slice(5).trim());
+      } catch {
+        throw new Error("Invalid SSE error payload");
+      }
       throw new Error(payload.error || "Stream error");
     }
   }

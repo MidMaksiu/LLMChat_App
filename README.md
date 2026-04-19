@@ -22,9 +22,23 @@ Made out of curiosity because I'm currently enrolled in an AI project at my univ
    python -m uvicorn main:app --reload --port 8000
    
 3. Start the frontend (static server):
-    ```bash
-    cd frontend_basic
-    python -m http.server 3000
-4. Open in browser:
-   http://localhost:3000
-5. Enter prompts and enjoy.
+```bash
+  cd frontend_basic
+  python -m http.server 3000
+ ```
+ Or you can use Live preview option in vscode
+ index.html -> Show preview -> Open in external browser (Should open on port 3000 or 3001)
+
+4. If there is problem with ports open main.py and add to origins localhost with your index.html adress"
+```python
+origins = [
+  "http://localhost:3000",  #My Python server
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",  #My VS CODE LIVE PREVIEW
+  "http://localhost:3001",
+ ]
+```
+   
+5. Open in browser:
+   http://localhost:3000 / http://localhost:3001
+6. Enter prompts and enjoy.

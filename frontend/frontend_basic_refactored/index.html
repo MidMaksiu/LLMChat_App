@@ -8,125 +8,134 @@
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <main class="app-shell container-fluid px-4 px-xl-5">
-    <div class="row justify-content-center">
-      <div class="header-shell text-center mb-4">
-        <h1 class="app-title display-4">LLM Chat MVP</h1>
-        <p class="app-subtitle lead">A simple chat interface for testing LLM responses.</p>
-      </div>
+  <!-- Main application shell -->
+<main class="app-shell container-fluid px-2 px-xl-3">
+  <div class="dashboard-layout">
+
+    <div class="header-shell text-center">
+      <h1 class="app-title">LLM Chat</h1>
+      <p class="app-subtitle">A simple chat interface</p>
     </div>
 
-    <div class="row g-4">
-      <aside class="col-md-2 d-none d-md-block sidebar me-5 pe-3">
-        <header class="mb-2">
-          <h2 class="sidebar-title text-uppercase mb-1 text-center">Menu</h2>
+    <aside class="sidebar">
+      <header class="mb-2">
+        <h2 class="sidebar-title text-uppercase mb-1 text-center">Menu</h2>
+      </header>
+
+      <button
+        id="param_btn"
+        class="btn app-btn-outline mt-2 w-100"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#settingsOffcanvas"
+        aria-controls="settingsOffcanvas">
+        ⚙️ Settings
+      </button>
+    </aside>
+
+    <section class="chat-column ps-0">
+      <div class="chat-shell p-3">
+        <header class="mb-3 text-center">
+          <h2 class="chat-title m-0">LLM Chat</h2>
         </header>
 
-        <button
-          id="param_btn"
-          class="btn app-btn-outline mt-2 w-100"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#settingsOffcanvas"
-          aria-controls="settingsOffcanvas"
-        >
-          ⚙️ Settings
-        </button>
-      </aside>
+        <section
+          class="chat-panel border rounded p-2 mb-3 bg-panel border-custom"
+          aria-label="Chat Messages">
+          <div
+            id="chatMessages"
+            class="chat-messages"
+            aria-live="polite"
+            aria-label="Conversation"
+          ></div>
+        </section>
 
-      <div class="col-12 col-md-9 ps-5 pe-0">
-        <div class="chat-shell p-4">
-          <header class="mb-3 text-center">
-            <h2 class="chat-title m-0">LLM Chat</h2>
-          </header>
+        <div class="status" id="status"></div>
+        <div class="error" id="error"></div>
 
-          <section class="chat-panel border rounded p-3 mb-3 bg-panel border-custom"
-            aria-label="Chat Messages">
-            <div
-              id="chatMessages"
-              class="chat-messages"
-              aria-live="polite"
-              aria-label="Conversation"
-            ></div>
-          </section>
+        <form id="chatForm" class="mt-2" aria-label="Sending Message">
+          <label class="label" for="prompt">Prompt</label>
+          <textarea
+            id="prompt"
+            class="textarea"
+            rows="3"
+            placeholder="Ask anything..."
+          ></textarea>
 
-          <div class="status" id="status"></div>
-          <div class="error" id="error"></div>
+          <div class="d-flex align-items-center mt-3">
+            <div class="d-flex gap-2">
+              <button id="sendBtn" type="submit" class="btn app-btn-primary">
+                Send
+              </button>
+              <button id="stopBtn" type="button" class="btn app-btn-warning" hidden>
+                Stop
+              </button>
+              <button id="clearBtn" type="button" class="btn app-btn-secondary">
+                Clear Input
+              </button>
+            </div>
 
-      <form id="chatForm" class="mt-2" aria-label="Sending Message">
-        <label class="label" for="prompt">Prompt</label>
-        <textarea
-          id="prompt"
-          class="textarea"
-          rows="3"
-          placeholder="Ask anything..."
-        ></textarea>
-
-        <div class="d-flex align-items-center mt-3">
-          <div class="d-flex gap-2">
-            <button id="sendBtn" type="submit" class="btn app-btn-primary">
-              Send
-            </button>
-            <button id="stopBtn" type="button" class="btn app-btn-warning" hidden>
-              Stop
-            </button>
-            <button id="clearBtn" type="button" class="btn app-btn-secondary">
-              Clear Input
+            <button id="newChatBtn" type="button" class="btn app-btn-danger-outline ms-auto">
+              New Chat
             </button>
           </div>
-
-          <button id="newChatBtn" type="button" class="btn app-btn-danger-outline ms-auto">
-            New Chat
-          </button>
-        </div>
-      </form>
-        </div>
+        </form>
       </div>
-    </div>
-  </main>
+    </section>
 
-  <div class="offcanvas offcanvas-start" tabindex="-1" id="settingsOffcanvas" aria-labelledby="settingsTitle">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="settingsTitle">Model Settings</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-
-    <div class="offcanvas-body">
-      <form id="settingsForm" class="vstack gap-3">
-        <div>
-          <label for="modelSelect" class="form-label">Model</label>
-          <select id="modelSelect" class="form-select form-select-sm">
-            <option value="">Loading models...</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="d-flex justify-content-between align-items-center">
-            <label for="temperatureRange" class="form-label mb-0">Temperature</label>
-            <span class="badge text-bg-secondary" id="temperatureValue">0.7</span>
-          </div>
-          <input type="range" class="form-range" id="temperatureRange" min="0" max="2" step="0.1" value="0.7" />
-        </div>
-
-        <div>
-          <label for="maxTokensInput" class="form-label">Max tokens</label>
-          <input type="number" class="form-control form-control-sm" id="maxTokensInput" min="1" max="4096" step="1" value="1024" />
-        </div>
-
-        <div class="d-flex gap-2">
-          <button type="button" class="btn app-btn-reset w-100" id="resetSettingsBtn">
-            Reset
-          </button>
-          <button type="button" class="btn app-btn-primary w-100" id="applySettingsBtn">
-            Apply
-          </button>
-        </div>
-      </form>
-    </div>
   </div>
+
+  <div id="connectionStatus" class="connection-status disconnected" aria-live="polite">
+    <span class="connection-dot" aria-hidden="true"></span>
+    <span id="connectionStatusText">Disconnected</span>
+  </div>
+</main>
+
+ <!-- Parameters panel -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="settingsOffcanvas" aria-labelledby="settingsTitle">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="settingsTitle">Model Settings</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+
+  <div class="offcanvas-body">
+    <form id="settingsForm" class="vstack gap-3">
+      <div>
+        <label for="modelSelect" class="form-label">Model</label>
+        <select id="modelSelect" class="form-select form-select-sm">
+          <option value="">Loading models...</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="d-flex justify-content-between align-items-center">
+          <label for="temperatureRange" class="form-label mb-0">Temperature</label>
+          <span class="badge text-bg-secondary" id="temperatureValue">0.7</span>
+        </div>
+        <input type="range" class="form-range" id="temperatureRange" min="0" max="2" step="0.1" value="0.7" />
+      </div>
+
+      <div>
+        <label for="maxTokensInput" class="form-label">Max tokens</label>
+        <input type="number" class="form-control form-control-sm" id="maxTokensInput" min="1" max="4096" step="1" value="1024" />
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="button" class="btn app-btn-reset w-100" id="resetSettingsBtn">
+          Reset
+        </button>
+        <button type="button" class="btn app-btn-primary w-100" id="applySettingsBtn">
+          Apply
+        </button>
+
+      </div>
+    </form>
+  </div>
+</div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>
